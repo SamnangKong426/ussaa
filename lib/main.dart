@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ussaa/screens/home_screen.dart';
-// import 'package:ussaa/services/notification_service.dart';
+import 'package:ussaa/screens/intro_screen.dart';
+import 'package:ussaa/services/notification_service.dart';
 
-void main()  async {
-
+void main() async {
   /* Initialize the notification service */
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await NotificationService.initializeNotification();
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.initializeNotification();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.quicksandTextTheme(),
       ),
       // home: SafeArea(child: IntroScreen()),
-      home: const SafeArea(child: HomeScreen()),
+      home: SafeArea(child: IntroScreen()),
     );
   }
 }

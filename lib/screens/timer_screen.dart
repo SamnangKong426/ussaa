@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ussaa/services/notification_service.dart';
 
 class TimerScreen extends StatefulWidget {
   const TimerScreen({super.key});
@@ -10,8 +11,16 @@ class TimerScreen extends StatefulWidget {
 class _TimerScreenState extends State<TimerScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Timer Screen'),
+    return Center(
+      child: ElevatedButton(
+        onPressed: () {
+          NotificationService.showNotification(
+            title: 'Timer Notification',
+            body: 'This is a notification from the Timer Screen',
+          );
+        },
+        child: const Text('Show Notification'),
+      ),
     );
   }
 }

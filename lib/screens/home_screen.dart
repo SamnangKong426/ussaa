@@ -33,21 +33,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screenList,
+    return SafeArea(
+      child: Scaffold(
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _screenList,
+        ),
+        bottomNavigationBar: BottomNavBar(),
+        floatingActionButton: _selectedIndex == 0
+            ? FloatingActionButton(
+                backgroundColor: Colors.blue.shade600,
+                onPressed: _createTask,
+                child: const Icon(Icons.create, color: Colors.white),
+              )
+            : null,
       ),
-      bottomNavigationBar: SafeArea(
-        child: BottomNavBar(),
-      ),
-      floatingActionButton: _selectedIndex == 0
-          ? FloatingActionButton(
-              backgroundColor: Colors.blue.shade600,
-              onPressed: _createTask,
-              child: const Icon(Icons.create, color: Colors.white),
-            )
-          : null,
     );
   }
 
@@ -78,14 +78,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   BottomNavBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
       child: GNav(
         rippleColor: Colors.grey[300]!,
         hoverColor: Colors.grey[100]!,
-        gap: 8,
+        gap: 4,
         activeColor: Colors.black,
-        iconSize: 24,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        iconSize: 20,
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12),
         duration: const Duration(milliseconds: 400),
         tabBackgroundColor: Colors.grey[100]!,
         color: Colors.black,

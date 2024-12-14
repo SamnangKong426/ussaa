@@ -63,86 +63,103 @@ class _NewTaskState extends State<NewTask> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppBar(
-              title: Text(headerLabel),
-            ),
-            TextField(
-              controller: _taskTitleController,
-              decoration: InputDecoration(
-                labelText: titleLabel,
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.only(left: 10, right: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppBar(
+                title: Text(headerLabel, style: const TextStyle(fontSize: 20)),
+                backgroundColor: Colors.transparent,
               ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _taskDescriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Task description',
+              TextField(
+                controller: _taskTitleController,
+                decoration: InputDecoration(
+                  labelText: titleLabel,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            DropdownButton(
-              hint: _selectedCategory == null
-                  ? const Text('Select a category')
-                  : Text(_selectedCategory.toString().split('.').last),
-              items: TaskCategory.values
-                  .map((e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e.toString().split('.').last),
-                      ))
-                  .toList(),
-              onChanged: _onSeleteCategory,
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                const Icon(Icons.access_time_rounded),
-                const SizedBox(width: 10),
-                TextButton(onPressed: _selectDate, child: Text(dateLabel)),
-                const SizedBox(width: 10),
-                TextButton(
-                  onPressed: _selectStartTime,
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.black54),
-                    foregroundColor: MaterialStateProperty.all(Colors.white),
-                    padding: MaterialStateProperty.all(
-                        const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10)),
-                  ),
-                  child: Text(startTimeLabel),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _taskDescriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Task description',
                 ),
-                const SizedBox(width: 20),
-                TextButton(
-                  onPressed: _selectEndTime,
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.black54),
-                    foregroundColor: MaterialStateProperty.all(Colors.white),
-                    padding: MaterialStateProperty.all(
-                        const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10)),
-                  ),
-                  child: Text(endTimeLabel),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              ),
+              const SizedBox(height: 10),
+              DropdownButton(
+                hint: _selectedCategory == null
+                    ? const Text('Select a category')
+                    : Text(_selectedCategory.toString().split('.').last),
+                items: TaskCategory.values
+                    .map((e) => DropdownMenuItem(
+                          value: e,
+                          child: Text(e.toString().split('.').last),
+                        ))
+                    .toList(),
+                onChanged: _onSeleteCategory,
+              ),
+              const SizedBox(height: 20),
+              Row(
                 children: [
-                  ElevatedButton(
-                      onPressed: _onReset, child: const Text('Reset')),
+                  const Icon(Icons.access_time_rounded),
                   const SizedBox(width: 10),
-                  ElevatedButton(onPressed: _onSave, child: Text(buttonLabel)),
+                  TextButton(
+                      onPressed: _selectDate,
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.black54),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        padding: MaterialStateProperty.all(
+                            const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5)),
+                      ),
+                      child: Text(dateLabel)),
+                  const SizedBox(width: 10),
+                  TextButton(
+                    onPressed: _selectStartTime,
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.black54),
+                      foregroundColor: MaterialStateProperty.all(Colors.white),
+                      padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5)),
+                    ),
+                    child: Text(startTimeLabel),
+                  ),
+                  const SizedBox(width: 10),
+                  TextButton(
+                    onPressed: _selectEndTime,
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.black54),
+                      foregroundColor: MaterialStateProperty.all(Colors.white),
+                      padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10)),
+                    ),
+                    child: Text(endTimeLabel),
+                  ),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                        onPressed: _onReset, child: const Text('Reset')),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                        onPressed: _onSave, child: Text(buttonLabel)),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

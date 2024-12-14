@@ -64,29 +64,33 @@ class ProfileScreen extends StatelessWidget {
       ],
     );
 
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          AppBar(
-            title: const Text('Profile'),
-            backgroundColor: Colors.white,
-          ),
-          profileAvatar,
-          const SizedBox(height: 20),
-          const Text('Tasks Overview',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        AppBar(
+          title: const Text('Profile'),
+          backgroundColor: Colors.transparent,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
             children: [
-              ...getTasksOverview(),
+              profileAvatar,
+              const SizedBox(height: 20),
+              const Text('Tasks Overview',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ...getTasksOverview(),
+                ],
+              ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

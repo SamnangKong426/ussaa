@@ -40,7 +40,7 @@ class IntroScreen extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 30),
         child: Row(
           children: [
-            Image.asset(feature['icon']!),
+            Image.asset(feature['icon']!, width: 50, height: 50),
             const SizedBox(width: 20),
             Expanded(
               child: Column(
@@ -50,7 +50,7 @@ class IntroScreen extends StatelessWidget {
                   Text(
                     feature['title']!,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: colors[1],
                     ),
@@ -58,7 +58,9 @@ class IntroScreen extends StatelessWidget {
                   Text(
                     feature['description']!,
                     style: TextStyle(
-                        color: colors[0], fontWeight: FontWeight.w500),
+                        fontSize: 12,
+                        color: colors[0],
+                        fontWeight: FontWeight.w500),
                   )
                 ],
               ),
@@ -72,47 +74,44 @@ class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        // Re-added SingleChildScrollView
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: colors[1],
-                    ),
+      body: Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: colors[1],
                   ),
-                  const SizedBox(height: 40),
-                  ...getFeatureWidgets(),
-                ],
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const HomeScreen()));
-                },
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                  backgroundColor: colors[2],
                 ),
-                child: const Text(
-                  'CONTINUE >>>',
-                  style: TextStyle(color: Colors.white),
-                ),
+                const SizedBox(height: 20),
+                ...getFeatureWidgets(),
+              ],
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const HomeScreen()));
+              },
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                backgroundColor: colors[2],
               ),
-            ],
-          ),
+              child: const Text(
+                'CONTINUE >>>',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
         ),
       ),
     );

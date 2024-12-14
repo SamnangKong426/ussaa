@@ -34,7 +34,7 @@ class TaskList extends StatelessWidget {
       itemCount: filteredTaskList.length,
       itemBuilder: (context, index) {
         return Container(
-          margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+          margin: const EdgeInsets.all(5),
           child: Card(
             child: ListTile(
               leading: IconButton(
@@ -56,23 +56,31 @@ class TaskList extends StatelessWidget {
               onLongPress: () {
                 deleteTaskList(filteredTaskList[index]);
               },
-              contentPadding: const EdgeInsets.all(10),
+              contentPadding: const EdgeInsets.all(5),
               title: Row(
                 children: [
                   Text(
                     filteredTaskList[index].title,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const Spacer(),
                   Text(
                     '${filteredTaskList[index].startTime.format(context)} ${filteredTaskList[index].startTime.period == DayPeriod.am ? 'AM' : 'PM'}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
                   ),
                 ],
               ),
-              subtitle: Text(filteredTaskList[index].description),
+              subtitle: Text(filteredTaskList[index].description,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  )),
             ),
           ),
         );

@@ -31,7 +31,7 @@ class CategoryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(right: 10),
+      margin: const EdgeInsets.only(right: 5),
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
@@ -45,6 +45,7 @@ class CategoryButton extends StatelessWidget {
           categoryName,
           style: const TextStyle(
             color: Colors.white,
+            fontSize: 12,
           ),
         ),
       ),

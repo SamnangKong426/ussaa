@@ -3,6 +3,8 @@ import 'package:ussaa/models/task_model.dart';
 import 'package:ussaa/widgets/category_button.dart';
 import 'package:ussaa/widgets/new_task.dart';
 import 'package:ussaa/widgets/task_list.dart';
+import 'dart:async';
+import 'package:ussaa/services/notification_service.dart';
 
 class TaskScreen extends StatefulWidget {
   final List<TaskModel> taskList;
@@ -109,28 +111,65 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    startTaskNotificationTimer();
+  }
+
+  void startTaskNotificationTimer() {
+    Timer.periodic(Duration(minutes: 1), (timer) {
+      checkTaskStartTime();
+    });
+  }
+
+  void checkTaskStartTime() {
+    DateTime now = DateTime.now();
+    for (var task in widget.taskList) {
+      if (!task.isCompleted && task.startTime != null) {
+        DateTime taskStartTime = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          task.startTime.hour,
+          task.startTime.minute,
+        );
+        if (taskStartTime.difference(now).inMinutes <= 1 &&
+            taskStartTime.day == task.date.day &&
+            taskStartTime.month == task.date.month &&
+            taskStartTime.year == task.date.year) {
+          NotificationService.showNotification(
+            title: 'Task Reminder',
+            body:
+                'Your task "${task.title}" is about to start in ${taskStartTime.difference(now).inMinutes} minutes.',
+          );
+        }
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 20),
+        const SizedBox(height: 10),
         SizedBox(
-          height: 50,
+          height: 30,
           child: ListView(
-            padding: const EdgeInsets.only(left: 20),
+            padding: const EdgeInsets.only(left: 5),
             scrollDirection: Axis.horizontal,
             children: getCategoryButtons(),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 5),
         Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               const Text(
                 'Today',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -144,7 +183,7 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
         ),
         if (_isTaskTodayShow)
-          Expanded(
+          Flexible(
             child: TaskList(
                 taskList: widget.taskList,
                 completeTaskList: completeTask,
@@ -153,13 +192,13 @@ class _TaskScreenState extends State<TaskScreen> {
                 mode: TaskListMode.pending),
           ),
         Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               const Text(
                 'Completed Today',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -173,7 +212,7 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
         ),
         if (_isCompletedTaskTodayShow)
-          Expanded(
+          Flexible(
             child: TaskList(
               taskList: widget.taskList,
               completeTaskList: completeTask,
