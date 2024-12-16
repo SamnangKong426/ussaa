@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ussaa/models/task_model.dart';
 import 'package:ussaa/screens/task_screen.dart';
 import 'package:ussaa/screens/timer_screen.dart';
+import 'package:ussaa/services/database_service.dart';
 import 'package:ussaa/widgets/new_task.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
@@ -17,19 +18,29 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  final List<TaskModel> _taskList = taskList;
+  List<Task> tasks = [];
+  final AppDatabase db = AppDatabase.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    refreshTaskList();
+  }
+
+  Future<void> refreshTaskList() async {
+    final List<Task?> taskList = await db.readAllTasks();
+    setState(() {
+      tasks = taskList.where((task) => task != null).cast<Task>().toList();
+      _screenList[0] = TaskScreen(taskList: tasks);
+    });
+  }
+
   final List<Widget> _screenList = [
-    TaskScreen(taskList: taskList),
+    const TaskScreen(taskList: []),
     const TimerScreen(),
     const CalendarScreen(),
     ProfileScreen(),
   ];
-
-  void _updateScreenList() {
-    setState(() {
-      _screenList[0] = TaskScreen(taskList: _taskList);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,44 +50,39 @@ class _HomeScreenState extends State<HomeScreen> {
           index: _selectedIndex,
           children: _screenList,
         ),
-        bottomNavigationBar: BottomNavBar(),
-        floatingActionButton: _selectedIndex == 0
-            ? FloatingActionButton(
-                backgroundColor: Colors.blue.shade600,
-                onPressed: _createTask,
-                child: const Icon(Icons.create, color: Colors.white),
-              )
-            : null,
+        bottomNavigationBar: _buildBottomNavBar(),
+        floatingActionButton: _selectedIndex == 0 ? _buildAddTaskButton() : null,
       ),
     );
   }
 
-  Future<void> _createTask() async {
-    TaskModel task = TaskModel(
-      title: '',
-      description: '',
-      category: TaskCategory.Work,
-      date: DateTime.now(),
-      startTime: TimeOfDay.now(),
-      endTime: TimeOfDay.now(),
+  Widget _buildAddTaskButton() {
+    return FloatingActionButton(
+      backgroundColor: Colors.blue.shade600,
+      onPressed: () async {
+        Task task = Task(
+          title: '',
+          description: '',
+          taskType: TaskType.today,
+          dueDate: DateTime.now(),
+        );
+        final result = await Navigator.push<Task>(
+            context,
+            MaterialPageRoute(
+                builder: (context) => NewTask(
+                      taskmode: TaskMode.creating,
+                      task: task,
+                    )));
+        if (result != null) {
+          await db.createTask(result);
+          await refreshTaskList();
+        }
+      },
+      child: const Icon(Icons.create, color: Colors.white),
     );
-    final result = await Navigator.push<TaskModel>(
-        context,
-        MaterialPageRoute(
-            builder: (context) => NewTask(
-                  taskmode: TaskMode.creating,
-                  task: task,
-                )));
-    print(result);
-    if (result != null) {
-      setState(() {
-        _taskList.add(result);
-        _updateScreenList();
-      });
-    }
   }
 
-  BottomNavBar() {
+  Widget _buildBottomNavBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
       child: GNav(

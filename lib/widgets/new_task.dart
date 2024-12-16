@@ -4,22 +4,20 @@ import 'package:ussaa/models/task_model.dart';
 enum TaskMode { creating, editing }
 
 class NewTask extends StatefulWidget {
-  NewTask({super.key, required this.taskmode, required this.task});
-
+  const NewTask({super.key, required this.taskmode, required this.task});
   final TaskMode taskmode;
-  final TaskModel task;
+  final Task task;
 
   @override
   State<NewTask> createState() => _NewTaskState();
 }
 
 class _NewTaskState extends State<NewTask> {
+  final formKey = GlobalKey<FormState>();
   late TextEditingController _taskTitleController;
   late TextEditingController _taskDescriptionController;
-  TaskCategory? _selectedCategory;
-  DateTime _selectedDate = DateTime.now();
-  TimeOfDay _selectedStartTime = TimeOfDay.now();
-  TimeOfDay _selectedEndTime = TimeOfDay.now();
+  TaskType? _selectedCategory;
+  DateTime _selectedDateTime = DateTime.now();
 
   @override
   void initState() {
@@ -28,11 +26,9 @@ class _NewTaskState extends State<NewTask> {
     _taskDescriptionController = TextEditingController();
     if (widget.taskmode == TaskMode.editing) {
       _taskTitleController.text = widget.task.title;
-      _taskDescriptionController.text = widget.task.description;
-      _selectedCategory = widget.task.category;
-      _selectedDate = widget.task.date;
-      _selectedStartTime = widget.task.startTime;
-      _selectedEndTime = widget.task.endTime;
+      _taskDescriptionController.text = widget.task.description!;
+      _selectedCategory = widget.task.taskType;
+      _selectedDateTime = widget.task.dueDate;
     }
   }
 
@@ -51,14 +47,12 @@ class _NewTaskState extends State<NewTask> {
 
   String get titleLabel => creatingMode ? "Task name" : widget.task.title;
   String get descriptionLabel =>
-      creatingMode ? "Task description" : widget.task.description;
+      creatingMode ? "Task description" : widget.task.description!;
 
   String get categoryLabel => creatingMode
       ? "Select a category"
-      : widget.task.category.toString().split('.').last;
-  String get dateLabel => _selectedDate.toString().split(' ')[0];
-  String get startTimeLabel => _selectedStartTime.format(context);
-  String get endTimeLabel => _selectedEndTime.format(context);
+      : widget.task.taskType.toString().split('.').last;
+  String get dateTimeLabel => '${_selectedDateTime.toLocal()}'.split(' ')[0] + ' ' + TimeOfDay.fromDateTime(_selectedDateTime).format(context);
 
   @override
   Widget build(BuildContext context) {
@@ -73,94 +67,75 @@ class _NewTaskState extends State<NewTask> {
                 title: Text(headerLabel, style: const TextStyle(fontSize: 20)),
                 backgroundColor: Colors.transparent,
               ),
-              TextField(
-                controller: _taskTitleController,
-                decoration: InputDecoration(
-                  labelText: titleLabel,
-                ),
-              ),
+              _buildTextField(_taskTitleController, titleLabel),
               const SizedBox(height: 10),
-              TextField(
-                controller: _taskDescriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Task description',
-                ),
-              ),
+              _buildTextField(_taskDescriptionController, 'Task description'),
               const SizedBox(height: 10),
-              DropdownButton(
-                hint: _selectedCategory == null
-                    ? const Text('Select a category')
-                    : Text(_selectedCategory.toString().split('.').last),
-                items: TaskCategory.values
-                    .map((e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e.toString().split('.').last),
-                        ))
-                    .toList(),
-                onChanged: _onSeleteCategory,
-              ),
+              _buildDropdownButton(),
               const SizedBox(height: 20),
-              Row(
-                children: [
-                  const Icon(Icons.access_time_rounded),
-                  const SizedBox(width: 10),
-                  TextButton(
-                      onPressed: _selectDate,
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.black54),
-                        foregroundColor:
-                            MaterialStateProperty.all(Colors.white),
-                        padding: MaterialStateProperty.all(
-                            const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5)),
-                      ),
-                      child: Text(dateLabel)),
-                  const SizedBox(width: 10),
-                  TextButton(
-                    onPressed: _selectStartTime,
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.black54),
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
-                      padding: MaterialStateProperty.all(
-                          const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5)),
-                    ),
-                    child: Text(startTimeLabel),
-                  ),
-                  const SizedBox(width: 10),
-                  TextButton(
-                    onPressed: _selectEndTime,
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.black54),
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
-                      padding: MaterialStateProperty.all(
-                          const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10)),
-                    ),
-                    child: Text(endTimeLabel),
-                  ),
-                ],
-              ),
+              _buildDateTimeButton(),
               const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton(
-                        onPressed: _onReset, child: const Text('Reset')),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                        onPressed: _onSave, child: Text(buttonLabel)),
-                  ],
-                ),
-              ),
+              _buildActionButtons(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String labelText) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+      ),
+    );
+  }
+
+  Widget _buildDropdownButton() {
+    return DropdownButton(
+      hint: _selectedCategory == null
+          ? const Text('Select a category')
+          : Text(_selectedCategory.toString().split('.').last),
+      items: TaskType.values
+          .map((e) => DropdownMenuItem(
+                value: e,
+                child: Text(e.toString().split('.').last),
+              ))
+          .toList(),
+      onChanged: _onSeleteCategory,
+    );
+  }
+
+  Widget _buildDateTimeButton() {
+    return Row(
+      children: [
+        const Icon(Icons.access_time_rounded),
+        const SizedBox(width: 10),
+        TextButton(
+          onPressed: _selectDateTime,
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.black54),
+            foregroundColor: MaterialStateProperty.all(Colors.white),
+            padding: MaterialStateProperty.all(
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 5)),
+          ),
+          child: Text(dateTimeLabel),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          ElevatedButton(onPressed: _onReset, child: const Text('Reset')),
+          const SizedBox(width: 10),
+          ElevatedButton(onPressed: _onSubmit, child: Text(buttonLabel)),
+        ],
       ),
     );
   }
@@ -170,19 +145,11 @@ class _NewTaskState extends State<NewTask> {
       _taskTitleController.clear();
       _taskDescriptionController.clear();
       _selectedCategory = null;
-      _selectedDate = DateTime.now();
-      _selectedStartTime = TimeOfDay.now();
-      _selectedEndTime = TimeOfDay.now();
+      _selectedDateTime = DateTime.now();
     });
   }
 
-  void _onSave() {
-    // print("Task title: ${_taskTitleController.text}");
-    // print("Task description: ${_taskDescriptionController.text}");
-    // print("Category: $_selectedCategory");
-    // print("Start time: ${_selectedStartTime.format(context)} ${_selectedStartTime.period == DayPeriod.am ? 'AM' : 'PM'}");
-    // print("End time: ${_selectedEndTime.format(context)} ${_selectedEndTime.period == DayPeriod.am ? 'AM' : 'PM'}");
-
+  void _onSubmit() {
     if (_taskTitleController.text.isEmpty ||
         _taskDescriptionController.text.isEmpty ||
         _selectedCategory == null) {
@@ -192,53 +159,45 @@ class _NewTaskState extends State<NewTask> {
       return;
     }
 
-    TaskModel task = TaskModel(
+    final task = Task(
       title: _taskTitleController.text,
       description: _taskDescriptionController.text,
-      category: _selectedCategory!,
-      date: _selectedDate,
-      startTime: _selectedStartTime,
-      endTime: _selectedEndTime,
+      taskType: _selectedCategory!,
+      dueDate: _selectedDateTime,
     );
 
     Navigator.pop(context, task);
   }
 
-  void _onSeleteCategory(TaskCategory? value) {
+  void _onSeleteCategory(TaskType? value) {
     setState(() {
       _selectedCategory = value!;
     });
   }
 
-  void _selectStartTime() async {
-    final TimeOfDay? timeOfDay = await showTimePicker(
-        context: context,
-        initialTime: _selectedStartTime,
-        initialEntryMode: TimePickerEntryMode.inputOnly);
-    setState(() {
-      if (timeOfDay != null) _selectedStartTime = timeOfDay;
-    });
-  }
-
-  void _selectEndTime() async {
-    final TimeOfDay? timeOfDay = await showTimePicker(
-        context: context,
-        initialTime: _selectedEndTime,
-        initialEntryMode: TimePickerEntryMode.inputOnly);
-    setState(() {
-      if (timeOfDay != null) _selectedEndTime = timeOfDay;
-    });
-  }
-
-  Future<void> _selectDate() async {
-    DateTime? _picked = await showDatePicker(
+  Future<void> _selectDateTime() async {
+    DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
+      initialDate: _selectedDateTime,
       firstDate: DateTime(2024),
       lastDate: DateTime(2100),
     );
-    setState(() {
-      if (_picked != null) _selectedDate = _picked;
-    });
+    if (pickedDate != null) {
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
+      );
+      if (pickedTime != null) {
+        setState(() {
+          _selectedDateTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      }
+    }
   }
 }

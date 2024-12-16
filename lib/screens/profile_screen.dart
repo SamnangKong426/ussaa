@@ -16,7 +16,7 @@ class ProfileScreen extends StatelessWidget {
       var task = entry.value;
       return Expanded(
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(8),
           margin: EdgeInsets.only(right: i < tasksOverview.length - 1 ? 10 : 0),
           decoration: BoxDecoration(
             color: task['color'],
@@ -26,9 +26,9 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Text(task['count'],
                   style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold)),
+                      fontSize: 12, fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
-              Text(task['title'], style: const TextStyle(fontSize: 16)),
+              Text(task['title'], style: const TextStyle(fontSize: 12)),
             ],
           ),
         ),
@@ -47,17 +47,17 @@ class ProfileScreen extends StatelessWidget {
             child: Image.asset(avatarImg),
           ),
         ),
-        const SizedBox(width: 20),
+        const SizedBox(width: 10),
         const Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'John Doe',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
-              Text('Nothing is impossible', style: TextStyle(fontSize: 13)),
+              Text('Nothing is impossible', style: TextStyle(fontSize: 12)),
             ],
           ),
         ),
@@ -69,18 +69,20 @@ class ProfileScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         AppBar(
-          title: const Text('Profile'),
+          title: const Text('Profile',
+              style: TextStyle(color: Colors.black, fontSize: 16)),
           backgroundColor: Colors.transparent,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               profileAvatar,
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               const Text('Tasks Overview',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 20),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

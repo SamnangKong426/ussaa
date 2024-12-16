@@ -1,86 +1,123 @@
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 
-var uuid = Uuid();
+enum TaskType { today, planned, urgent }
 
-enum TaskCategory {
-  Work,
-  Personal,
-  Study,
-  Health,
-}
+extension TaskTypeExtension on TaskType {
+  String get name {
+    switch (this) {
+      case TaskType.today:
+        return 'Today';
+      case TaskType.planned:
+        return 'Planned';
+      case TaskType.urgent:
+        return 'Urgent';
+      default:
+        return '';
+    }
+  }
 
-class TaskModel {
-  final String id;
-  final String title;
-  final String description;
-  final DateTime date;
-  final TimeOfDay startTime;
-  final TimeOfDay endTime;
-  final TaskCategory category;
-  bool isCompleted;
-
-  TaskModel({
-    String? id,
-    required this.title,
-    required this.description,
-    required this.date,
-    required this.startTime,
-    required this.endTime,
-    required this.category,
-    this.isCompleted = false,
-  }) : id = id ?? uuid.v4();
-
-  @override
-  String toString() {
-    return 'TaskModel{id: $id, title: $title, description: $description, date: $date, startTime: $startTime, endTime: $endTime, category: $category, isCompleted: $isCompleted}';
+  static TaskType getTaskType(String taskType) {
+    switch (taskType) {
+      case 'Today':
+        return TaskType.today;
+      case 'Planned':
+        return TaskType.planned;
+      case 'Urgent':
+        return TaskType.urgent;
+      default:
+        return TaskType.today;
+    }
   }
 }
 
-List<TaskModel> taskList = [
-  TaskModel(
-    title: 'Meeting with client',
-    description: 'Discuss about the project',
-    date: DateTime.now(),
-    startTime: TimeOfDay(hour: 15, minute: 20),
-    endTime: TimeOfDay(hour: 11, minute: 0),
-    category: TaskCategory.Work,
-    isCompleted: false,
-  ),
-  TaskModel(
-    title: 'Buy Groceries',
-    description: 'Buy vegetables, fruits, etc',
-    date: DateTime.now(),
-    startTime: TimeOfDay(hour: 15, minute: 24),
-    endTime: TimeOfDay(hour: 13, minute: 0),
-    category: TaskCategory.Personal,
-    isCompleted: false,
-  ),
-  TaskModel(
-    title: 'Call Mom',
-    description: 'Call mom and ask about her health',
-    date: DateTime.now(),
-    startTime: TimeOfDay(hour: 15, minute: 23),
-    endTime: TimeOfDay(hour: 15, minute: 30),
-    category: TaskCategory.Personal,
-    isCompleted: false,
-  ),
-  TaskModel(
-    title: 'Meeting with client',
-    description: 'Discuss about the project',
-    date: DateTime.now(),
-    startTime: TimeOfDay(hour: 10, minute: 0),
-    endTime: TimeOfDay(hour: 11, minute: 0),
-    category: TaskCategory.Work,
-    isCompleted: true,
-  ),
-  TaskModel(
-    title: 'Call Mom',
-    description: 'Call mom and ask about her health',
-    date: DateTime.now(),
-    startTime: TimeOfDay(hour: 15, minute: 0),
-    endTime: TimeOfDay(hour: 15, minute: 30),
-    category: TaskCategory.Personal,
-    isCompleted: true,
-  ),
+const String tableName = 'tasks';
+const String idField = '_id';
+const String titleField = 'title';
+const String descriptionField = 'description';
+const String dueDateField = 'due_date';
+const String taskTypeField = 'task_type';
+const String isDoneField = 'is_done';
+
+const List<String> TaskColumns = [
+  idField,
+  titleField,
+  descriptionField,
+  dueDateField,
+  taskTypeField,
+  isDoneField,
 ];
+
+const String boolType = "BOOLEAN NOT NULL";
+const String idType = "INTEGER PRIMARY KEY AUTOINCREMENT";
+const String textTypeNullable = "TEXT";
+const String textType = "TEXT NOT NULL";
+
+class Task {
+  final int? id;
+  final String title;
+  final String? description;
+  final DateTime dueDate;
+  final TaskType taskType;
+  final bool isDone;
+
+  const Task({
+    this.id,
+    required this.title,
+    this.description,
+    required this.dueDate,
+    required this.taskType,
+    this.isDone = false,
+  });
+
+  static Task fromjson(Map<String, dynamic> json) {
+    return Task(
+      id: json[idField] as int?,
+      title: json[titleField] as String,
+      description: json[descriptionField] as String?,
+      dueDate: DateTime.parse(json[dueDateField] as String),
+      taskType: TaskTypeExtension.getTaskType(json[taskTypeField] as String),
+      isDone: json[isDoneField] == 1,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        idField: id,
+        titleField: title,
+        descriptionField: description,
+        dueDateField: dueDate.toIso8601String(),
+        taskTypeField: taskType.name,
+        isDoneField: isDone ? 1 : 0,
+      };
+
+  Task copyWith({
+    int? id,
+    String? title,
+    String? description,
+    DateTime? dueDate,
+    TaskType? taskType,
+    bool? isDone,
+  }) {
+    return Task(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      dueDate: dueDate ?? this.dueDate,
+      taskType: taskType ?? this.taskType,
+      isDone: isDone ?? this.isDone,
+    );
+  }
+
+  static Task fromJson(Map<String, dynamic> json) => Task(
+        id: json[idField] as int?,
+        title: json[titleField] as String,
+        description: json[descriptionField] as String?,
+        dueDate: DateTime.parse(json[dueDateField] as String),
+        taskType: TaskTypeExtension.getTaskType(json[taskTypeField] as String),
+        isDone: json[isDoneField] == 1,
+      );
+
+  @override
+  String toString() {
+    return 'Task{id: $id, title: $title, description: $description, dueDate: $dueDate, taskType: $taskType, isDone: $isDone}';
+  }
+}

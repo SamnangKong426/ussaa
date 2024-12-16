@@ -43,6 +43,8 @@ dependencies:
   uuid: ^4.5.1
   awesome_notifications: ^0.10.0
   palette_generator: ^0.3.3+5
+  sqflite: ^2.4.1
+  flutter_hooks: ^0.20.5
 
 dev_dependencies:
   flutter_test:

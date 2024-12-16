@@ -7,8 +7,8 @@ enum TaskListMode {
 }
 
 class TaskList extends StatelessWidget {
-  final List<TaskModel> taskList;
-  final Function(TaskModel) completeTaskList;
+  final List<Task> taskList;
+  final Function(Task) completeTaskList;
   final Function updateTaskList;
   final Function deleteTaskList;
   final TaskListMode mode;
@@ -26,8 +26,8 @@ class TaskList extends StatelessWidget {
   Widget build(BuildContext context) {
     final filteredTaskList = taskList.where((task) {
       return mode == TaskListMode.completed
-          ? task.isCompleted
-          : !task.isCompleted;
+          ? task.isDone
+          : !task.isDone;
     }).toList();
 
     return ListView.builder(
@@ -39,10 +39,10 @@ class TaskList extends StatelessWidget {
             child: ListTile(
               leading: IconButton(
                 icon: Icon(
-                  filteredTaskList[index].isCompleted
+                  filteredTaskList[index].isDone
                       ? Icons.check_circle
                       : Icons.radio_button_unchecked,
-                  color: filteredTaskList[index].isCompleted
+                  color: filteredTaskList[index].isDone
                       ? Colors.green
                       : Colors.grey,
                 ),
@@ -68,7 +68,7 @@ class TaskList extends StatelessWidget {
                   ),
                   const Spacer(),
                   Text(
-                    '${filteredTaskList[index].startTime.format(context)} ${filteredTaskList[index].startTime.period == DayPeriod.am ? 'AM' : 'PM'}',
+                    '${filteredTaskList[index].dueDate.toString().split(' ')[0]} ${TimeOfDay.fromDateTime(filteredTaskList[index].dueDate).format(context)}',
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
@@ -76,7 +76,7 @@ class TaskList extends StatelessWidget {
                   ),
                 ],
               ),
-              subtitle: Text(filteredTaskList[index].description,
+              subtitle: Text(filteredTaskList[index].description ?? '',
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
