@@ -9,7 +9,7 @@ class IntroScreen extends StatelessWidget {
     {
       'icon': 'assets/icons/task_icon.png',
       'title': 'Create Tasks Quickly and Easily',
-      'description': 'Input tasks, subtasks and repetive tasks.'
+      'description': 'Input tasks, subtasks and repetitive tasks.'
     },
     {
       'icon': 'assets/icons/reminder_icon.png',
@@ -74,46 +74,110 @@ class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: OrientationBuilder(
+        builder: (context, orientation) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child: orientation == Orientation.portrait
+                ? _buildPortraitLayout(context)
+                : _buildLandscapeLayout(context),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildPortraitLayout(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: colors[1],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ...getFeatureWidgets(),
-              ],
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const HomeScreen()));
-              },
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                backgroundColor: colors[2],
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: colors[1],
               ),
-              child: const Text(
-                'CONTINUE >>>',
-                style: TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 20),
+            ...getFeatureWidgets(),
+          ],
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const HomeScreen()));
+          },
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            backgroundColor: colors[2],
+          ),
+          child: const Text(
+            'CONTINUE >>>',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLandscapeLayout(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: colors[1],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ...getFeatureWidgets().sublist(0, 2),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 44), // To align with the title on the left
+                  ...getFeatureWidgets().sublist(2, 4),
+                ],
               ),
             ),
           ],
         ),
-      ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const HomeScreen()));
+          },
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            backgroundColor: colors[2],
+          ),
+          child: const Text(
+            'CONTINUE >>>',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
     );
   }
 }

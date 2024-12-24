@@ -57,24 +57,24 @@ class _NewTaskState extends State<NewTask> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(headerLabel, style: const TextStyle(fontSize: 20)),
+        backgroundColor: Colors.blue,
+      ),
       body: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.only(left: 10, right: 10),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AppBar(
-                title: Text(headerLabel, style: const TextStyle(fontSize: 20)),
-                backgroundColor: Colors.transparent,
-              ),
               _buildTextField(_taskTitleController, titleLabel),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               _buildTextField(_taskDescriptionController, 'Task description'),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               _buildDropdownButton(),
               const SizedBox(height: 20),
               _buildDateTimeButton(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 40),
               _buildActionButtons(),
             ],
           ),
@@ -88,15 +88,22 @@ class _NewTaskState extends State<NewTask> {
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }
 
   Widget _buildDropdownButton() {
-    return DropdownButton(
-      hint: _selectedCategory == null
-          ? const Text('Select a category')
-          : Text(_selectedCategory.toString().split('.').last),
+    return DropdownButtonFormField(
+      decoration: InputDecoration(
+        labelText: 'Category',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      value: _selectedCategory,
       items: TaskType.values
           .map((e) => DropdownMenuItem(
                 value: e,
@@ -114,11 +121,13 @@ class _NewTaskState extends State<NewTask> {
         const SizedBox(width: 10),
         TextButton(
           onPressed: _selectDateTime,
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.black54),
-            foregroundColor: MaterialStateProperty.all(Colors.white),
-            padding: MaterialStateProperty.all(
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 5)),
+          style: TextButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
           child: Text(dateTimeLabel),
         ),
@@ -132,9 +141,27 @@ class _NewTaskState extends State<NewTask> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          ElevatedButton(onPressed: _onReset, child: const Text('Reset')),
+          ElevatedButton(
+            onPressed: _onReset,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text('Reset'),
+          ),
           const SizedBox(width: 10),
-          ElevatedButton(onPressed: _onSubmit, child: Text(buttonLabel)),
+          ElevatedButton(
+            onPressed: _onSubmit,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(buttonLabel),
+          ),
         ],
       ),
     );

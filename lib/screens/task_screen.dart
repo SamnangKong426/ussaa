@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
+// import 'package:sqflite/sqflite.dart';
 import 'package:ussaa/models/task_model.dart';
 import 'package:ussaa/services/database_service.dart';
 import 'package:ussaa/widgets/category_button.dart';
@@ -18,7 +18,7 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> {
   TaskType selectedCategory = TaskType.today;
-   final AppDatabase db = AppDatabase.instance;
+  final AppDatabase db = AppDatabase.instance;
 
   final List<List<dynamic>> category = [
     ['ALL', TaskType.today],
@@ -50,7 +50,8 @@ class _TaskScreenState extends State<TaskScreen> {
   void _showTaskToday() {
     setState(() {
       _isTaskTodayShow = !_isTaskTodayShow;
-      _iconTask = _isTaskTodayShow ? Icons.arrow_drop_up : Icons.arrow_drop_down;
+      _iconTask =
+          _isTaskTodayShow ? Icons.arrow_drop_up : Icons.arrow_drop_down;
     });
   }
 
@@ -189,7 +190,9 @@ class _TaskScreenState extends State<TaskScreen> {
         if (_isTaskTodayShow)
           Flexible(
             child: TaskList(
-                taskList: widget.taskList.where((task) => task.taskType == selectedCategory).toList(),
+                taskList: widget.taskList
+                    .where((task) => task.taskType == selectedCategory)
+                    .toList(),
                 completeTaskList: completeTask,
                 updateTaskList: updateTask,
                 deleteTaskList: deleteTask,
@@ -218,7 +221,9 @@ class _TaskScreenState extends State<TaskScreen> {
         if (_isCompletedTaskTodayShow)
           Flexible(
             child: TaskList(
-              taskList: widget.taskList.where((task) => task.taskType == selectedCategory).toList(),
+              taskList: widget.taskList
+                  .where((task) => task.taskType == selectedCategory)
+                  .toList(),
               completeTaskList: completeTask,
               updateTaskList: updateTask,
               deleteTaskList: deleteTask,

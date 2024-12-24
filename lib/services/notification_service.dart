@@ -70,7 +70,15 @@ class NotificationService {
       ReceivedAction receivedAction) async {
     debugPrint('onActionReceivedMethod');
     final payload = receivedAction.payload ?? {};
-    if (payload["navigate"] == "true") {
+    if (receivedAction.buttonKeyPressed == 'STOP_TIMER') {
+      // Handle the stop timer action
+      MyApp.navigatorKey.currentState?.popUntil((route) => route.isFirst);
+      MyApp.navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+        ),
+      );
+    } else if (payload["navigate"] == "true") {
       MyApp.navigatorKey.currentState?.push(
         MaterialPageRoute(
           builder: (_) => const HomeScreen(),
@@ -113,6 +121,29 @@ class NotificationService {
               interval: Duration(minutes: interval!),
             )
           : null,
+    );
+  }
+
+  static Future<void> showTimerNotification({
+    required final String title,
+    required final String body,
+    required final String remainingTime,
+  }) async {
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 1,
+        channelKey: 'high_importance_channel',
+        title: title,
+        body: body,
+        notificationLayout: NotificationLayout.Default,
+        payload: {'remainingTime': remainingTime},
+      ),
+      actionButtons: [
+        NotificationActionButton(
+          key: 'STOP_TIMER',
+          label: 'Stop Timer',
+        ),
+      ],
     );
   }
 }
