@@ -24,7 +24,6 @@ class _TaskScreenState extends State<TaskScreen> {
     ['ALL', TaskType.today],
     ['PLAN', TaskType.planned],
     ['URGENT', TaskType.urgent],
-    // Add other categories as needed
   ];
 
   List<Widget> getCategoryButtons() {
