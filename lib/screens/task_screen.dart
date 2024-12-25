@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // import 'package:sqflite/sqflite.dart';
 import 'package:ussaa/models/task_model.dart';
 import 'package:ussaa/services/database_service.dart';
@@ -17,11 +18,11 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  TaskType selectedCategory = TaskType.today;
+  TaskType selectedCategory = TaskType.all;
   final AppDatabase db = AppDatabase.instance;
 
   final List<List<dynamic>> category = [
-    ['ALL', TaskType.today],
+    ['ALL', TaskType.all],
     ['PLAN', TaskType.planned],
     ['URGENT', TaskType.urgent],
     // Add other categories as needed
@@ -41,24 +42,26 @@ class _TaskScreenState extends State<TaskScreen> {
     }).toList();
   }
 
-  bool _isTaskTodayShow = true;
+  bool _isTaskShow = true;
   IconData _iconTask = Icons.arrow_drop_down;
 
-  bool _isCompletedTaskTodayShow = true;
+  bool _isCompletedTaskShow = true;
   IconData _iconCompletedTaks = Icons.arrow_drop_down;
 
-  void _showTaskToday() {
+  void _showTask() {
     setState(() {
-      _isTaskTodayShow = !_isTaskTodayShow;
+      _isCompletedTaskShow = false;
+      _isTaskShow = !_isTaskShow;
       _iconTask =
-          _isTaskTodayShow ? Icons.arrow_drop_up : Icons.arrow_drop_down;
+          _isTaskShow ? Icons.arrow_drop_up : Icons.arrow_drop_down;
     });
   }
 
-  void _showCompletedTaskToday() {
+  void _showCompletedTask() {
     setState(() {
-      _isCompletedTaskTodayShow = !_isCompletedTaskTodayShow;
-      _iconCompletedTaks = _isCompletedTaskTodayShow
+      _isTaskShow = false;
+      _isCompletedTaskShow = !_isCompletedTaskShow;
+      _iconCompletedTaks = _isCompletedTaskShow
           ? Icons.arrow_drop_up
           : Icons.arrow_drop_down;
     });
@@ -118,7 +121,19 @@ class _TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     super.initState();
+    _isTaskShow = true;
+    _isCompletedTaskShow = false;
     startTaskNotificationTimer();
+    // Disable landscape mode
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   void startTaskNotificationTimer() {
@@ -168,11 +183,11 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
         const SizedBox(height: 5),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
           child: Row(
             children: [
               const Text(
-                'Today',
+                'Tasks',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -181,13 +196,13 @@ class _TaskScreenState extends State<TaskScreen> {
               IconButton(
                 icon: Icon(_iconTask, color: Colors.black, size: 30),
                 onPressed: () {
-                  _showTaskToday();
+                  _showTask();
                 },
               ),
             ],
           ),
         ),
-        if (_isTaskTodayShow)
+        if (_isTaskShow)
           Flexible(
             child: TaskList(
                 taskList: widget.taskList
@@ -199,11 +214,11 @@ class _TaskScreenState extends State<TaskScreen> {
                 mode: TaskListMode.pending),
           ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
           child: Row(
             children: [
               const Text(
-                'Completed Today',
+                'Completed Tasks',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -212,13 +227,13 @@ class _TaskScreenState extends State<TaskScreen> {
               IconButton(
                 icon: Icon(_iconCompletedTaks, color: Colors.black, size: 30),
                 onPressed: () {
-                  _showCompletedTaskToday();
+                  _showCompletedTask();
                 },
               ),
             ],
           ),
         ),
-        if (_isCompletedTaskTodayShow)
+        if (_isCompletedTaskShow)
           Flexible(
             child: TaskList(
               taskList: widget.taskList

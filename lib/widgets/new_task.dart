@@ -58,14 +58,16 @@ class _NewTaskState extends State<NewTask> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(headerLabel, style: const TextStyle(fontSize: 20)),
-        backgroundColor: Colors.blue,
+        title: Text(headerLabel),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(16),
+        scrollDirection: Axis.vertical,
+
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               _buildTextField(_taskTitleController, titleLabel),
               const SizedBox(height: 20),
@@ -96,21 +98,31 @@ class _NewTaskState extends State<NewTask> {
   }
 
   Widget _buildDropdownButton() {
-    return DropdownButtonFormField(
-      decoration: InputDecoration(
-        labelText: 'Category',
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<TaskType>(
+          value: _selectedCategory,
+          hint: const Text('Select a category'),
+          isExpanded: true,
+          items: TaskType.values
+              .map((e) => DropdownMenuItem(
+                    value: e,
+                    child: Text(e.toString().split('.').last),
+                  ))
+              .toList(),
+          onChanged: _onSeleteCategory,
+          icon: const Icon(Icons.arrow_drop_down),
+          iconSize: 24,
+          elevation: 16,
+          style: const TextStyle(color: Colors.black, fontSize: 16),
+          dropdownColor: Colors.white,
         ),
       ),
-      value: _selectedCategory,
-      items: TaskType.values
-          .map((e) => DropdownMenuItem(
-                value: e,
-                child: Text(e.toString().split('.').last),
-              ))
-          .toList(),
-      onChanged: _onSeleteCategory,
     );
   }
 
@@ -145,6 +157,7 @@ class _NewTaskState extends State<NewTask> {
             onPressed: _onReset,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.grey,
+              foregroundColor: Colors.white, // Change text color to white
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -156,6 +169,7 @@ class _NewTaskState extends State<NewTask> {
             onPressed: _onSubmit,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
+              foregroundColor: Colors.white, // Change text color to white
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),

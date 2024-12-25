@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:ussaa/models/task_model.dart';
 
 class ProfileScreen extends StatelessWidget {
-  ProfileScreen({super.key});
+  final List<Task> taskList;
+
+  ProfileScreen({super.key, required this.taskList});
 
   final String avatarImg = 'assets/images/profile.png';
 
-  final List tasksOverview = [
-    {'title': 'Tasks Completed', 'count': '10', "color": Colors.green[100]},
-    {'title': 'Tasks Pending', 'count': '5', "color": Colors.red[100]},
-  ];
+  List<Map<String, dynamic>> get tasksOverview {
+    int completedTasks = taskList.where((task) => task.isDone).length;
+    int pendingTasks = taskList.length - completedTasks;
+
+    return [
+      {'title': 'Tasks Completed', 'count': '$completedTasks', "color": Colors.green[100]},
+      {'title': 'Tasks Pending', 'count': '$pendingTasks', "color": Colors.red[100]},
+    ];
+  }
 
   List<Widget> getTasksOverview() {
     return tasksOverview.asMap().entries.map((entry) {
@@ -68,11 +76,7 @@ class ProfileScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        AppBar(
-          title: const Text('Profile',
-              style: TextStyle(color: Colors.black, fontSize: 16)),
-          backgroundColor: Colors.transparent,
-        ),
+
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

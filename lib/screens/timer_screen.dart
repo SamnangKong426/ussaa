@@ -14,7 +14,6 @@ class _TimerScreenState extends State<TimerScreen> {
   int _workTime = 25 * 60;
   int _remainingTime = 25 * 60;
   Timer? _timer;
-  bool _enablePause = false;
   bool _isPaused = false;
 
   @override
@@ -22,6 +21,7 @@ class _TimerScreenState extends State<TimerScreen> {
     super.initState();
     NotificationService.initializeNotification();
     _hideSystemUI();
+
   }
 
   void _hideSystemUI() {
@@ -38,7 +38,6 @@ class _TimerScreenState extends State<TimerScreen> {
       _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         setState(() {
-          _enablePause = true;
           if (_remainingTime > 0) {
             _remainingTime--;
             _updateNotification();
@@ -104,6 +103,10 @@ class _TimerScreenState extends State<TimerScreen> {
     return Scaffold(
       body: OrientationBuilder(
         builder: (context, orientation) {
+          bool isLandscape = orientation == Orientation.landscape;
+          if (isLandscape) {
+            print('Landscape mode');
+          }
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -183,19 +186,27 @@ class _TimerScreenState extends State<TimerScreen> {
     return Column(
       children: [
         Text(label, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(child: _buildNumberPicker('H', hours, 23, (value) {
-              onChanged(value, minutes, seconds);
-            })),
-            Expanded(child: _buildNumberPicker('M', minutes, 59, (value) {
-              onChanged(hours, value, seconds);
-            })),
-            Expanded(child: _buildNumberPicker('S', seconds, 59, (value) {
-              onChanged(hours, minutes, value);
-            })),
-          ],
+        const SizedBox(height: 10),
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(child: _buildNumberPicker('H', hours, 23, (value) {
+                onChanged(value, minutes, seconds);
+              })),
+              Expanded(child: _buildNumberPicker('M', minutes, 59, (value) {
+                onChanged(hours, value, seconds);
+              })),
+              Expanded(child: _buildNumberPicker('S', seconds, 59, (value) {
+                onChanged(hours, minutes, value);
+              })),
+            ],
+          ),
         ),
       ],
     );
@@ -210,13 +221,22 @@ class _TimerScreenState extends State<TimerScreen> {
           width: 50,
           child: ListWheelScrollView.useDelegate(
             itemExtent: 40,
-            onSelectedItemChanged: onChanged,
+            onSelectedItemChanged: (index) {
+              if (index < 0) {
+                onChanged(maxValue);
+              } else if (index > maxValue) {
+                onChanged(0);
+              } else {
+                onChanged(index);
+              }
+            },
             controller: FixedExtentScrollController(initialItem: initialValue),
             childDelegate: ListWheelChildBuilderDelegate(
               builder: (context, index) {
+                int displayIndex = index % (maxValue + 1);
                 return Center(
                   child: Text(
-                    index.toString().padLeft(2, '0'),
+                    displayIndex.toString().padLeft(2, '0'),
                     style: const TextStyle(fontSize: 24),
                   ),
                 );
@@ -241,7 +261,7 @@ class _TimerScreenState extends State<TimerScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
           ),
-          child: const Text('Retry'),
+          child: const Text('Retry', style: TextStyle(color: Colors.white)),
         ),
         const SizedBox(width: 10),
         ElevatedButton(
@@ -252,7 +272,7 @@ class _TimerScreenState extends State<TimerScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
           ),
-          child: _isPaused ? const Text('Pause') : const Text('Start'),
+          child: Text(_isPaused ? 'Pause' : 'Start', style: const TextStyle(color: Colors.white)),
         ),
       ],
     );

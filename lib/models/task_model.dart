@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-enum TaskType { today, planned, urgent }
+enum TaskType { all, planned, urgent }
 
 extension TaskTypeExtension on TaskType {
   String get name {
     switch (this) {
-      case TaskType.today:
-        return 'Today';
+      case TaskType.all:
+        return 'All';
       case TaskType.planned:
         return 'Planned';
       case TaskType.urgent:
@@ -18,14 +18,14 @@ extension TaskTypeExtension on TaskType {
 
   static TaskType getTaskType(String taskType) {
     switch (taskType) {
-      case 'Today':
-        return TaskType.today;
+      case 'All':
+        return TaskType.all;
       case 'Planned':
         return TaskType.planned;
       case 'Urgent':
         return TaskType.urgent;
       default:
-        return TaskType.today;
+        return TaskType.all;
     }
   }
 }

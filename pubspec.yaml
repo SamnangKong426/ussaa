@@ -44,6 +44,7 @@ dependencies:
   awesome_notifications: ^0.10.0
   palette_generator: ^0.3.3+5
   sqflite: ^2.4.1
+  timeline_tile: ^2.0.0
 
 dev_dependencies:
   flutter_test:

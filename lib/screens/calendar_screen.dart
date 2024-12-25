@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:ussaa/models/task_model.dart';
+import 'package:ussaa/services/database_service.dart';
+import 'package:ussaa/widgets/task_timeline.dart';
 
 class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({super.key});
+  const CalendarScreen({super.key, required this.taskList});
+  final List<Task> taskList;
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -14,23 +18,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
     setState(() {
       today = day;
       print(today);
+      print(widget.taskList);
     });
   }
 
   @override
+  void initState() {
+    super.initState();
+    print(widget.taskList);
+    
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final filteredTaskList = widget.taskList.where((task) {
+      return task.dueDate.day == today.day &&
+             task.dueDate.month == today.month &&
+             task.dueDate.year == today.year;
+    }).toList()
+      ..sort((a, b) => b.dueDate.compareTo(a.dueDate));
+
     return Padding(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.only(left: 8, right: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('< Calendar >',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           TableCalendar(
             locale: 'en_US',
-            rowHeight: 43,
-            daysOfWeekHeight: 43,
+            rowHeight: 40,
+            daysOfWeekHeight: 40,
             headerStyle: const HeaderStyle(
                 formatButtonVisible: false, titleCentered: true),
             availableGestures: AvailableGestures.all,
@@ -40,6 +57,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
             selectedDayPredicate: (day) => isSameDay(day, today),
             onDaySelected: _onDaySelected,
           ),
+          const SizedBox(height: 10),
+          TaskTimeline(taskList: filteredTaskList),
         ],
       ),
     );

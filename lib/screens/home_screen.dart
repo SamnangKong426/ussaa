@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ussaa/models/task_model.dart';
 import 'package:ussaa/screens/task_screen.dart';
 import 'package:ussaa/screens/timer_screen.dart';
@@ -32,18 +33,41 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       tasks = taskList.where((task) => task != null).cast<Task>().toList();
       _screenList[0] = TaskScreen(taskList: tasks);
+      _screenList[1] = CalendarScreen(taskList: tasks);
+      _screenList[3] = ProfileScreen(taskList: tasks);
     });
+  }
+
+  Future<void> _onTaskAction() async {
+    await refreshTaskList();
   }
 
   final List<Widget> _screenList = [
     const TaskScreen(taskList: []),
+    const CalendarScreen(
+      taskList: [],
+    ),
     const TimerScreen(),
-    const CalendarScreen(),
-    ProfileScreen(),
+    ProfileScreen(taskList: const []),
   ];
 
   @override
   Widget build(BuildContext context) {
+    if (_selectedIndex == 2) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    } else {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    }
+    refreshTaskList();
+
     return SafeArea(
       child: Scaffold(
         body: IndexedStack(
@@ -51,7 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
           children: _screenList,
         ),
         bottomNavigationBar: _buildBottomNavBar(),
-        floatingActionButton: _selectedIndex == 0 ? _buildAddTaskButton() : null,
+        floatingActionButton:
+            _selectedIndex == 0 ? _buildAddTaskButton() : null,
       ),
     );
   }
@@ -63,19 +88,21 @@ class _HomeScreenState extends State<HomeScreen> {
         Task task = Task(
           title: '',
           description: '',
-          taskType: TaskType.today,
+          taskType: TaskType.all,
           dueDate: DateTime.now(),
         );
         final result = await Navigator.push<Task>(
-            context,
-            MaterialPageRoute(
-                builder: (context) => NewTask(
-                      taskmode: TaskMode.creating,
-                      task: task,
-                    )));
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewTask(
+              taskmode: TaskMode.creating,
+              task: task,
+            ),
+          ),
+        );
         if (result != null) {
           await db.createTask(result);
-          await refreshTaskList();
+          await _onTaskAction();
         }
       },
       child: const Icon(Icons.create, color: Colors.white),
@@ -100,11 +127,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: LineIcons.home,
             text: 'Tasks',
           ),
-          GButton(icon: LineIcons.clock, text: 'Timer'),
           GButton(
             icon: LineIcons.calendar,
             text: 'Calendar',
           ),
+          GButton(icon: LineIcons.clock, text: 'Timer'),
           GButton(
             icon: LineIcons.user,
             text: 'Profile',
