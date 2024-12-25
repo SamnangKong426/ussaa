@@ -17,11 +17,11 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  TaskType selectedCategory = TaskType.all;
+  TaskType selectedCategory = TaskType.today;
   final AppDatabase db = AppDatabase.instance;
 
   final List<List<dynamic>> category = [
-    ['ALL', TaskType.all],
+    ['ALL', TaskType.today],
     ['PLAN', TaskType.planned],
     ['URGENT', TaskType.urgent],
     // Add other categories as needed
@@ -45,10 +45,11 @@ class _TaskScreenState extends State<TaskScreen> {
   IconData _iconTask = Icons.arrow_drop_down;
 
   bool _isCompletedTaskTodayShow = true;
-  IconData _iconCompletedTaks = Icons.arrow_drop_down;
+  IconData _iconCompletedTasks = Icons.arrow_drop_down;
 
   void _showTaskToday() {
     setState(() {
+      _isCompletedTaskTodayShow = false;
       _isTaskTodayShow = !_isTaskTodayShow;
       _iconTask =
           _isTaskTodayShow ? Icons.arrow_drop_up : Icons.arrow_drop_down;
@@ -57,8 +58,9 @@ class _TaskScreenState extends State<TaskScreen> {
 
   void _showCompletedTaskToday() {
     setState(() {
+      _isTaskTodayShow = false;
       _isCompletedTaskTodayShow = !_isCompletedTaskTodayShow;
-      _iconCompletedTaks = _isCompletedTaskTodayShow
+      _iconCompletedTasks = _isCompletedTaskTodayShow
           ? Icons.arrow_drop_up
           : Icons.arrow_drop_down;
     });
@@ -82,13 +84,17 @@ class _TaskScreenState extends State<TaskScreen> {
                   taskmode: TaskMode.editing,
                   task: editingTask,
                 )));
+    print(result);
     if (result != null) {
+      db.deleteTask(editingTask);
       setState(() {
         int index =
             widget.taskList.indexWhere((task) => task.id == editingTask.id);
+        print("index $index");
         if (index != -1) {
           widget.taskList[index] = result;
-          db.updateTask(result);
+          db.createTask(result);
+          print("db updated!");
         }
       });
     }
@@ -109,6 +115,7 @@ class _TaskScreenState extends State<TaskScreen> {
           onPressed: () {
             setState(() {
               widget.taskList.add(task);
+              db.createTask(task);
             });
           },
         ),
@@ -119,6 +126,8 @@ class _TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     super.initState();
+    _isCompletedTaskTodayShow = false;
+    _isTaskTodayShow = true;
     startTaskNotificationTimer();
   }
 
@@ -131,7 +140,7 @@ class _TaskScreenState extends State<TaskScreen> {
   void checkTaskStartTime() {
     DateTime now = DateTime.now();
     for (var task in widget.taskList) {
-      if (!task.isDone) {
+      if (!task.isDone && task.dueDate != null) {
         DateTime taskStartTime = DateTime(
           now.year,
           now.month,
@@ -146,7 +155,7 @@ class _TaskScreenState extends State<TaskScreen> {
           NotificationService.showNotification(
             title: 'Task Reminder',
             body:
-                'Your task "${task.title}" is about to start in ${taskStartTime.difference(now).inMinutes} minutes.',
+                'Your task "${task.title}" is about to start now',
           );
         }
       }
@@ -173,7 +182,7 @@ class _TaskScreenState extends State<TaskScreen> {
           child: Row(
             children: [
               const Text(
-                'Today',
+                'Tasks',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -189,29 +198,33 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
         ),
         if (_isTaskTodayShow)
-          Flexible(
-            child: TaskList(
-                taskList: widget.taskList
-                    .where((task) => task.taskType == selectedCategory)
-                    .toList(),
-                completeTaskList: completeTask,
-                updateTaskList: updateTask,
-                deleteTaskList: deleteTask,
-                mode: TaskListMode.pending),
-          ),
+          widget.taskList.isEmpty
+              ? const Center(
+                  child: Text('No tasks available'),
+                )
+              : Flexible(
+                  child: TaskList(
+                      taskList: widget.taskList
+                          .where((task) => task.taskType == selectedCategory)
+                          .toList(),
+                      completeTaskList: completeTask,
+                      updateTaskList: updateTask,
+                      deleteTaskList: deleteTask,
+                      mode: TaskListMode.pending),
+                ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               const Text(
-                'Completed Today',
+                'Completed Tasks',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               IconButton(
-                icon: Icon(_iconCompletedTaks, color: Colors.black, size: 30),
+                icon: Icon(_iconCompletedTasks, color: Colors.black, size: 30),
                 onPressed: () {
                   _showCompletedTaskToday();
                 },
@@ -220,17 +233,22 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
         ),
         if (_isCompletedTaskTodayShow)
-          Flexible(
-            child: TaskList(
-              taskList: widget.taskList
-                  .where((task) => task.taskType == selectedCategory)
-                  .toList(),
-              completeTaskList: completeTask,
-              updateTaskList: updateTask,
-              deleteTaskList: deleteTask,
-              mode: TaskListMode.completed,
-            ),
-          ),
+          widget.taskList.isEmpty
+              ? const Center(
+
+                  child: Text('No completed tasks available'),
+                )
+              : Flexible(
+                  child: TaskList(
+                    taskList: widget.taskList
+                        .where((task) => task.taskType == selectedCategory)
+                        .toList(),
+                    completeTaskList: completeTask,
+                    updateTaskList: updateTask,
+                    deleteTaskList: deleteTask,
+                    mode: TaskListMode.completed,
+                  ),
+                ),
       ],
     );
   }

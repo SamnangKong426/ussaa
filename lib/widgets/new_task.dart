@@ -52,7 +52,10 @@ class _NewTaskState extends State<NewTask> {
   String get categoryLabel => creatingMode
       ? "Select a category"
       : widget.task.taskType.toString().split('.').last;
-  String get dateTimeLabel => '${_selectedDateTime.toLocal()}'.split(' ')[0] + ' ' + TimeOfDay.fromDateTime(_selectedDateTime).format(context);
+  String get dateTimeLabel =>
+      '${_selectedDateTime.toLocal()}'.split(' ')[0] +
+      ' ' +
+      TimeOfDay.fromDateTime(_selectedDateTime).format(context);
 
   @override
   Widget build(BuildContext context) {
@@ -192,6 +195,7 @@ class _NewTaskState extends State<NewTask> {
       taskType: _selectedCategory!,
       dueDate: _selectedDateTime,
     );
+    print(task);
 
     Navigator.pop(context, task);
   }

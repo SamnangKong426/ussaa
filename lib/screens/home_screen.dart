@@ -53,20 +53,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_selectedIndex == 2) {
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ]);
-    } else {
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
+    if (_selectedIndex != 0) {
+      refreshTaskList();
     }
-    refreshTaskList();
 
     return SafeArea(
       child: Scaffold(
@@ -88,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Task task = Task(
           title: '',
           description: '',
-          taskType: TaskType.all,
+          taskType: TaskType.today,
           dueDate: DateTime.now(),
         );
         final result = await Navigator.push<Task>(

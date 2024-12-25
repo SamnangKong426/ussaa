@@ -1,11 +1,11 @@
 
-enum TaskType { all, planned, urgent }
+enum TaskType { today, planned, urgent }
 
 extension TaskTypeExtension on TaskType {
   String get name {
     switch (this) {
-      case TaskType.all:
-        return 'All';
+      case TaskType.today:
+        return 'Today';
       case TaskType.planned:
         return 'Planned';
       case TaskType.urgent:
@@ -17,14 +17,14 @@ extension TaskTypeExtension on TaskType {
 
   static TaskType getTaskType(String taskType) {
     switch (taskType) {
-      case 'All':
-        return TaskType.all;
+      case 'Today':
+        return TaskType.today;
       case 'Planned':
         return TaskType.planned;
       case 'Urgent':
         return TaskType.urgent;
       default:
-        return TaskType.all;
+        return TaskType.today;
     }
   }
 }

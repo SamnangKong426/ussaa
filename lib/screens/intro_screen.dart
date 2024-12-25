@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:ussaa/screens/home_screen.dart';
 
-class IntroScreen extends StatefulWidget {
-  const IntroScreen({super.key});
+class IntroScreen extends StatelessWidget {
+  IntroScreen({super.key});
 
-  @override
-  _IntroScreenState createState() => _IntroScreenState();
-}
-
-class _IntroScreenState extends State<IntroScreen> {
   final String title = 'Welcome to Ussaa';
   final features = [
     {
@@ -34,84 +28,153 @@ class _IntroScreenState extends State<IntroScreen> {
     }
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    // Enable only portrait mode
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-  }
+  final List<Color> colors = [
+    const Color.fromRGBO(60, 60, 67, 60),
+    Colors.black,
+    const Color.fromRGBO(5, 147, 255, 100)
+  ];
 
-  @override
-  void dispose() {
-    // Reset preferred orientations to allow both portrait and landscape modes
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    super.dispose();
+  List<Widget> getFeatureWidgets() {
+    return features.map((feature) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 30),
+        child: Row(
+          children: [
+            Image.asset(feature['icon']!, width: 50, height: 50),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    feature['title']!,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: colors[1],
+                    ),
+                  ),
+                  Text(
+                    feature['description']!,
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: colors[0],
+                        fontWeight: FontWeight.w500),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: features.map((feature) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                children: [
-                  Image.asset(
-                    feature['icon']!,
-                    width: 40,
-                    height: 40,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          feature['title']!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          feature['description']!,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+      body: OrientationBuilder(
+        builder: (context, orientation) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child: orientation == Orientation.portrait
+                ? _buildPortraitLayout(context)
+                : _buildLandscapeLayout(context),
           );
         },
-        child: const Icon(Icons.arrow_forward, color: Colors.white),
       ),
+    );
+  }
+
+  Widget _buildPortraitLayout(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: colors[1],
+              ),
+            ),
+            const SizedBox(height: 20),
+            ...getFeatureWidgets(),
+          ],
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()));
+          },
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            backgroundColor: colors[2],
+          ),
+          child: const Text(
+            'CONTINUE >>>',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLandscapeLayout(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: colors[1],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ...getFeatureWidgets().sublist(0, 2),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                      height: 44), // To align with the title on the left
+                  ...getFeatureWidgets().sublist(2, 4),
+                ],
+              ),
+            ),
+          ],
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()));
+          },
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            backgroundColor: colors[2],
+          ),
+          child: const Text(
+            'CONTINUE >>>',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
     );
   }
 }
