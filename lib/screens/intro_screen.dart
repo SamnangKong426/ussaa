@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:ussaa/screens/home_screen.dart';
 
 class IntroScreen extends StatefulWidget {
-  IntroScreen({super.key});
+  const IntroScreen({super.key});
 
   @override
   _IntroScreenState createState() => _IntroScreenState();

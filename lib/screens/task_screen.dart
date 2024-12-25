@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 // import 'package:sqflite/sqflite.dart';
 import 'package:ussaa/models/task_model.dart';
 import 'package:ussaa/services/database_service.dart';
@@ -42,26 +41,24 @@ class _TaskScreenState extends State<TaskScreen> {
     }).toList();
   }
 
-  bool _isTaskShow = true;
+  bool _isTaskTodayShow = true;
   IconData _iconTask = Icons.arrow_drop_down;
 
-  bool _isCompletedTaskShow = true;
+  bool _isCompletedTaskTodayShow = true;
   IconData _iconCompletedTaks = Icons.arrow_drop_down;
 
-  void _showTask() {
+  void _showTaskToday() {
     setState(() {
-      _isCompletedTaskShow = false;
-      _isTaskShow = !_isTaskShow;
+      _isTaskTodayShow = !_isTaskTodayShow;
       _iconTask =
-          _isTaskShow ? Icons.arrow_drop_up : Icons.arrow_drop_down;
+          _isTaskTodayShow ? Icons.arrow_drop_up : Icons.arrow_drop_down;
     });
   }
 
-  void _showCompletedTask() {
+  void _showCompletedTaskToday() {
     setState(() {
-      _isTaskShow = false;
-      _isCompletedTaskShow = !_isCompletedTaskShow;
-      _iconCompletedTaks = _isCompletedTaskShow
+      _isCompletedTaskTodayShow = !_isCompletedTaskTodayShow;
+      _iconCompletedTaks = _isCompletedTaskTodayShow
           ? Icons.arrow_drop_up
           : Icons.arrow_drop_down;
     });
@@ -98,6 +95,7 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   void deleteTask(Task task) {
+    print(task);
     setState(() {
       widget.taskList.removeWhere((t) => t.id == task.id);
       db.deleteTask(task);
@@ -121,19 +119,7 @@ class _TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     super.initState();
-    _isTaskShow = true;
-    _isCompletedTaskShow = false;
     startTaskNotificationTimer();
-    // Disable landscape mode
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   void startTaskNotificationTimer() {
@@ -183,11 +169,11 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
         const SizedBox(height: 5),
         Padding(
-          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               const Text(
-                'Tasks',
+                'Today',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -196,13 +182,13 @@ class _TaskScreenState extends State<TaskScreen> {
               IconButton(
                 icon: Icon(_iconTask, color: Colors.black, size: 30),
                 onPressed: () {
-                  _showTask();
+                  _showTaskToday();
                 },
               ),
             ],
           ),
         ),
-        if (_isTaskShow)
+        if (_isTaskTodayShow)
           Flexible(
             child: TaskList(
                 taskList: widget.taskList
@@ -214,11 +200,11 @@ class _TaskScreenState extends State<TaskScreen> {
                 mode: TaskListMode.pending),
           ),
         Padding(
-          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               const Text(
-                'Completed Tasks',
+                'Completed Today',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -227,13 +213,13 @@ class _TaskScreenState extends State<TaskScreen> {
               IconButton(
                 icon: Icon(_iconCompletedTaks, color: Colors.black, size: 30),
                 onPressed: () {
-                  _showCompletedTask();
+                  _showCompletedTaskToday();
                 },
               ),
             ],
           ),
         ),
-        if (_isCompletedTaskShow)
+        if (_isCompletedTaskTodayShow)
           Flexible(
             child: TaskList(
               taskList: widget.taskList

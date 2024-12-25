@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ussaa/models/task_model.dart';
+import 'package:ussaa/widgets/line_chart_widget.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class ProfileScreen extends StatelessWidget {
   final List<Task> taskList;
@@ -13,8 +15,16 @@ class ProfileScreen extends StatelessWidget {
     int pendingTasks = taskList.length - completedTasks;
 
     return [
-      {'title': 'Tasks Completed', 'count': '$completedTasks', "color": Colors.green[100]},
-      {'title': 'Tasks Pending', 'count': '$pendingTasks', "color": Colors.red[100]},
+      {
+        'title': 'Tasks Completed',
+        'count': '$completedTasks',
+        "color": Colors.green[100]
+      },
+      {
+        'title': 'Tasks Pending',
+        'count': '$pendingTasks',
+        "color": Colors.red[100]
+      },
     ];
   }
 
@@ -42,6 +52,14 @@ class ProfileScreen extends StatelessWidget {
         ),
       );
     }).toList();
+  }
+
+  List<FlSpot> getTaskDataPoints() {
+    List<FlSpot> dataPoints = [];
+    for (int i = 0; i < taskList.length; i++) {
+      dataPoints.add(FlSpot(i.toDouble(), taskList[i].isDone ? 1 : 0));
+    }
+    return dataPoints;
   }
 
   @override
@@ -76,7 +94,6 @@ class ProfileScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -92,6 +109,11 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   ...getTasksOverview(),
                 ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 350,
+                child: LineChartWidget(dataPoints: getTaskDataPoints()), // Pass dataPoints
               ),
             ],
           ),
